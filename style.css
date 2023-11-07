@@ -38,6 +38,19 @@ body {
     background-color: #74b9ff;
     border-radius: 20px;
     margin: 10px;
-    max-width: 40vw;
+    max-width: 50vw;
     overflow-x: auto;
+}
+
+.button{
+    background-color: #74b9ff;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    border: transparent;
+    font-style: roboto;
+}
+.button:hover{
+    transform: scale(1.2);
+    background-color: #ff6600;
 }

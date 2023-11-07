@@ -27,12 +27,20 @@ addWordButton.addEventListener('click', () => {
         wordElement.addEventListener('mouseout', () => {
             wordElement.style.transform = 'scale(1)';
             wordElement.style.color = '#000';
+        })
+        addWordButton.addEventListener('mouseover', () => {
+        addWordButton.style.transform = 'scale(1.2)';
+        addWordButton.style.backgroundColor = '#ff6600';            });
+
+        addWordButton.addEventListener('mouseout', () => {
+        addWordButton.style.transform = 'scale(1)';
+            addWordButton.style.backgroundColor = '#000';
             
-        });
+        })
         wordCloud.appendChild(wordElement);
         document.getElementById('new-word-input').value = '';
-    }
-});
+    
+}});
 
 for (let eachItem of wordCloudwords) {
     const wordElement = document.createElement('snip');
@@ -40,7 +48,7 @@ for (let eachItem of wordCloudwords) {
         wordElement.textContent = eachItem;
 
         // Randomly set the font size of the word
-        const fontSize = Math.floor(Math.random() * 50) ; // Random size between 16 and 45px
+        const fontSize = Math.floor(Math.random() * 60) ; // Random size between 16 and 45px
         wordElement.style.fontSize = fontSize + 'px';
 
         wordElement.style.marginTop = Math.floor(fontSize*40) + 'px';
