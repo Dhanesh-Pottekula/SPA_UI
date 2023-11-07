@@ -34,7 +34,7 @@ addWordButton.addEventListener('click', () => {
 
         addWordButton.addEventListener('mouseout', () => {
         addWordButton.style.transform = 'scale(1)';
-            addWordButton.style.backgroundColor = '#000';
+            addWordButton.style.backgroundColor = '#74b9ff';
             
         })
         wordCloud.appendChild(wordElement);
