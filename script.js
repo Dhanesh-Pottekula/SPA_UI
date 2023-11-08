@@ -1,59 +1,63 @@
+import Dashboard from "./views/Dashboard.js";
+import Posts from "./views/Posts.js";
+import PostView from "./views/PostView.js";
+import Settings from "./views/Settings.js";
 
-const wordCloud = document.getElementById('word-cloud');
-const addWordButton = document.getElementById('add-word-button');
-let wordCloudwords = ["Hello", "hii", "how", "what", "you", "yourself",
- "name", "victory", "food", "lovely", "beautiful", "written", "where",
-  "who", "awesome","HUDI", "is" ,"a",  ,"peer-to-peer" ,"ecosystem", "that", "and ","the",
-   "full" , "trading", "and", "before"];
+const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
-addWordButton.addEventListener('click', () => {
-    const newWord = document.getElementById('new-word-input').value;
-    if (newWord) {
-        const wordElement = document.createElement('snip');
-        wordElement.className = 'word';
-        wordElement.textContent = newWord;
+const getParams = match => {
+    const values = match.result.slice(1);
+    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
 
-        // Randomly set the font size of the word
-        const fontSize = Math.floor(Math.random() * 50) ; // Random size between 16 and 45px
-        wordElement.style.fontSize = fontSize + 'px';
-        
-        wordElement.style.marginTop = Math.floor(fontSize*40) + 'px';
-        wordElement.style.marginLeft = Math.floor(fontSize*3) + 'px';
+    return Object.fromEntries(keys.map((key, i) => {
+        return [key, values[i]];
+    }));
+};
 
-        wordElement.addEventListener('mouseover', () => {
-            wordElement.style.transform = 'scale(1.2)';
-            wordElement.style.color = '#ff6600';
-        });
-        wordElement.addEventListener('mouseout', () => {
-            wordElement.style.transform = 'scale(1)';
-            wordElement.style.color = '#000';
-        })
-        addWordButton.addEventListener('mouseover', () => {
-        addWordButton.style.transform = 'scale(1.2)';
-        addWordButton.style.backgroundColor = '#ff6600';            });
+const navigateTo = url => {
+    history.pushState(null, null, url);
+    router();
+};
 
-        addWordButton.addEventListener('mouseout', () => {
-        addWordButton.style.transform = 'scale(1)';
-            addWordButton.style.backgroundColor = '#74b9ff';
-            
-        })
-        wordCloud.appendChild(wordElement);
-        document.getElementById('new-word-input').value = '';
-    
-}});
+const router = async () => {
+    const routes = [
+        { path: "/", view: Dashboard },
+        { path: "/posts", view: Posts },
+        { path: "/posts/:id", view: PostView },
+        { path: "/settings", view: Settings }
+    ];
 
-for (let eachItem of wordCloudwords) {
-    const wordElement = document.createElement('snip');
-        wordElement.className = 'word';
-        wordElement.textContent = eachItem;
+    // Test each route for potential match
+    const potentialMatches = routes.map(route => {
+        return {
+            route: route,
+            result: location.pathname.match(pathToRegex(route.path))
+        };
+    });
 
-        // Randomly set the font size of the word
-        const fontSize = Math.floor(Math.random() * 60) ; // Random size between 16 and 45px
-        wordElement.style.fontSize = fontSize + 'px';
+    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
 
-        wordElement.style.marginTop = Math.floor(fontSize*40) + 'px';
-        wordElement.style.marginLeft = Math.floor(fontSize*3) + 'px';
-            console.log(fontSize)
-        wordCloud.appendChild(wordElement);
-        document.getElementById('new-word-input').value = '';
-}
+    if (!match) {
+        match = {
+            route: routes[0],
+            result: [location.pathname]
+        };
+    }
+
+    const view = new match.route.view(getParams(match));
+
+    document.querySelector("#app").innerHTML = await view.getHtml();
+};
+
+window.addEventListener("popstate", router);
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", e => {
+        if (e.target.matches("[data-link]")) {
+            e.preventDefault();
+            navigateTo(e.target.href);
+        }
+    });
+
+    router();
+});
